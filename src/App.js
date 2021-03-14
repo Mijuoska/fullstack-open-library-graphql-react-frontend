@@ -3,22 +3,13 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import {
-  gql,
   useQuery,
 } from '@apollo/client'
+import { ALL_AUTHORS } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
 
-const ALL_AUTHORS = gql `
-  query {allAuthors {
-  name
-  born
-  bookCount
-  }
-
-  }
-`
 
 
 
