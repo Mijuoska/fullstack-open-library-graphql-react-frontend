@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import BirthyearForm from './components/BirthyearForm'
 import {
   useQuery,
 } from '@apollo/client'

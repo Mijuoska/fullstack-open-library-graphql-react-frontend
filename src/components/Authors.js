@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import BirthyearForm from './BirthyearForm'
+
 
 
 
@@ -32,7 +34,7 @@ const Authors = ({authors, show}) => {
           )}
         </tbody>
       </table>
-
+<BirthyearForm/>
     </div>
   )
 }
