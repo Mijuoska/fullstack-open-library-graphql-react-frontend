@@ -30,7 +30,7 @@ const submit = (event) => {
 <form onSubmit={submit}>
 Name
 <select value={name} onChange={({ target }) => setName(target.value)}>
-{authors.map(author => <option value={author}>{author}</option>)}
+{authors.map(author => <option key={author} value={author}>{author}</option>)}
 </select>
 <div>
 Born <input type="number" value={born} onChange={({ target })=> setBirthyear(target.value)}/>

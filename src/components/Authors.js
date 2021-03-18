@@ -1,15 +1,30 @@
-import React, { useState } from 'react'
+import React from 'react'
 import BirthyearForm from './BirthyearForm'
+import {
+  ALL_AUTHORS
+} from '../queries'
+import {
+  useQuery,
+} from '@apollo/client'
 
 
 
 
-const Authors = ({authors, show}) => {
+
+const Authors = ({show}) => {
+
+ const result = useQuery(ALL_AUTHORS)
+
   if (!show) {
     return null
   }
 
+ 
+  const authors = result.data ? result.data.allAuthors : []
 
+  if (result.loading) {
+    return <div>Loading... </div>
+  }
 
   return (
     <div>
