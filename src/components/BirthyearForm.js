@@ -4,7 +4,7 @@ import {ALL_AUTHORS, UPDATE_AUTHOR} from '../queries'
 
 
 const BirthyearForm = ({ authors }) => {
-const [name, setName] = useState('')
+const [name, setName] = useState(authors[0])
 const [born, setBirthyear] = useState('')
 
 const [updateAuthor] = useMutation(UPDATE_AUTHOR, {

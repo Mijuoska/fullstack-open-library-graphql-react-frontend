@@ -11,7 +11,7 @@ import {
 
 
 
-const Authors = ({show}) => {
+const Authors = ({show, token}) => {
 
  const result = useQuery(ALL_AUTHORS)
 
@@ -49,7 +49,7 @@ const Authors = ({show}) => {
           )}
         </tbody>
       </table>
-<BirthyearForm authors={authors.map(a => a.name)}/>
+{token ? <BirthyearForm authors={authors.map(a => a.name)}/> : null}
     </div>
   )
 }
