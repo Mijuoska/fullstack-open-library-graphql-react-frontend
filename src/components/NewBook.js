@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import {useMutation} from '@apollo/client'
 import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries'
 
-const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
+const NewBook = ({show, setMessage}) => {
+  const [title, setTitle] = useState('Test book 8')
+  const [author, setAuthor] = useState('Miika')
+  const [published, setPublished] = useState('2021')
+  const [genre, setGenre] = useState('self-help')
   const [genres, setGenres] = useState([])
 
 
@@ -19,16 +19,18 @@ const [createBook] = useMutation(CREATE_BOOK, {
   { query: ALL_BOOKS
   }
 ],
-  onError: ({graphQLErrors, networkError}) => {
-    console.log(graphQLErrors);
-    console.log(networkError);
-    
+  onError: ({ graphQLErrors, networkError}) => {
+   const errorMsg = graphQLErrors[0].message ? graphQLErrors[0].message : networkError
+    setMessage({content: errorMsg, type: 'error'})
+setTimeout(() => {
+  setMessage('')
+}, 3000)
     
   }
 })
 
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -44,13 +46,17 @@ const [createBook] = useMutation(CREATE_BOOK, {
 
     createBook({variables: variables})
     
-    console.log('add book...')
 
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+    // setTitle('')
+    // setPublished('')
+    // setAuthor('')
+    // setGenres([])
+    // setGenre('')
+
+    setMessage({content: `Created book ${title}`, type:'success'})
+    setTimeout(()=> {
+      setMessage('')
+    }, 3000)
   }
 
   const addGenre = () => {
