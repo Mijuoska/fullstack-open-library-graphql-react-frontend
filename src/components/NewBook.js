@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {useMutation} from '@apollo/client'
 import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries'
 
+
 const NewBook = ({show, setMessage}) => {
   const [title, setTitle] = useState('Test book 8')
   const [author, setAuthor] = useState('Miika')
@@ -13,19 +14,32 @@ const NewBook = ({show, setMessage}) => {
 
 
 const [createBook] = useMutation(CREATE_BOOK, {
-  refetchQueries: [{
-    query: ALL_AUTHORS,
-  },
-  { query: ALL_BOOKS
-  }
-],
   onError: ({ graphQLErrors, networkError}) => {
-   const errorMsg = graphQLErrors[0].message ? graphQLErrors[0].message : networkError
+   const errorMsg = graphQLErrors.length > 0 ? graphQLErrors[0].message : networkError
     setMessage({content: errorMsg, type: 'error'})
 setTimeout(() => {
   setMessage('')
 }, 3000)
     
+  },
+  update: (store, response) => {
+   const booksInStore = store.readQuery({query: ALL_BOOKS})
+   const authorsInStore = store.readQuery({query: ALL_AUTHORS})
+   store.writeQuery({
+     query: ALL_BOOKS
+    },
+    {data: {
+      ...booksInStore, allBooks: [...booksInStore.allBooks, response.data.addBook]
+    }}
+    )
+    store.writeQuery({
+      query: ALL_AUTHORS
+    }, {
+      data: {
+        ...authorsInStore,
+        allAuthors: response.data.allAuthors
+      }
+    })
   }
 })
 

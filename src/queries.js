@@ -39,6 +39,7 @@ addBook(
     published
     author {
       name
+      born
     }
     genres
 }

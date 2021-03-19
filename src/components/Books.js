@@ -13,15 +13,8 @@ const user = useQuery(ME)
 
 const [getBooks, allBooks] = useLazyQuery(ALL_BOOKS, {
   onCompleted: (data) => {
-     const genres = data.allBooks.map(book => book.genres
-         .find(genre => genre))
-       .reduce((unique, item) => {
-         return unique.includes(item) ? unique : [...unique, item]
-       }, [])
-
+   
     setBooks(data.allBooks)
-       
-    setGenres(genres)
   }
 })
 
@@ -37,9 +30,20 @@ const [getBooksByGenre, booksByGenre] = useLazyQuery(ALL_BOOKS, {
 
 
 useEffect(()=> {
-  if (!genre && mode === 'allBooks') {
+  if (!genre) {
     getBooks()
   }
+
+if (allBooks.data) {
+setGenres(allBooks.data.allBooks.map(book => book.genres
+    .find(genre => genre))
+  .reduce((unique, item) => {
+    return unique.includes(item) ? unique : [...unique, item]
+  }, []))
+  }
+
+
+
 
 if (user.data && mode === 'recommendations') {
   setGenre(user.data.me.favoriteGenre)
