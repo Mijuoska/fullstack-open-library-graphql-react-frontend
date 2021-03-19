@@ -4,10 +4,10 @@ import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries'
 
 
 const NewBook = ({show, setMessage}) => {
-  const [title, setTitle] = useState('Test book 8')
-  const [author, setAuthor] = useState('Miika')
-  const [published, setPublished] = useState('2021')
-  const [genre, setGenre] = useState('self-help')
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [published, setPublished] = useState('')
+  const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
 
@@ -61,11 +61,11 @@ setTimeout(() => {
     createBook({variables: variables})
     
 
-    // setTitle('')
-    // setPublished('')
-    // setAuthor('')
-    // setGenres([])
-    // setGenre('')
+    setTitle('')
+    setPublished('')
+    setAuthor('')
+    setGenres([])
+    setGenre('')
 
   
   }

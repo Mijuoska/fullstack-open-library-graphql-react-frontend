@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery, useLazyQuery } from '@apollo/client'
-import { ALL_BOOKS, ME } from '../queries'
+import { useQuery, useLazyQuery, useSubscription } from '@apollo/client'
+import { ALL_BOOKS, ALL_AUTHORS, BOOK_ADDED, ME } from '../queries'
 import BooksTable from './BooksTable'
 
-const Books = ( { show, mode } ) => {
+const Books = ( { show, mode, setMessage } ) => {
 
 
 const [books, setBooks] = useState([])
@@ -15,6 +15,8 @@ const [getBooks, allBooks] = useLazyQuery(ALL_BOOKS, {
   onCompleted: (data) => {
    
     setBooks(data.allBooks)
+       
+
   }
 })
 
@@ -54,9 +56,51 @@ if (genre) {
   getBooksByGenre(genre)
 }
 
-
-
 }, [mode, genre])
+
+
+
+const updateBooksCache = (cache, newBook) => {
+  const includedIn = (set, object) => {
+    set.map(p => p.id).includes(object.id)
+  }
+
+  const booksInStore = cache.readQuery({
+    query: ALL_BOOKS
+  })
+  if (!includedIn(booksInStore.allBooks, newBook)) {
+    const updatedBooks = booksInStore.allBooks.concat(newBook)
+    cache.writeQuery({
+      query: ALL_BOOKS
+    }, {
+      data: {
+        allBooks: updatedBooks
+      }
+    })
+     return updatedBooks
+  }
+
+}
+
+
+
+useSubscription(BOOK_ADDED, {
+  onSubscriptionData: ({ client,
+    subscriptionData
+  }) => {
+    const newBook = subscriptionData.data.bookAdded
+    const { cache } = client
+    const updatedBooks = updateBooksCache(cache, newBook)
+    setBooks(updatedBooks)
+    setMessage({
+      content: `New book "${newBook.title}" by ${newBook.author.name} added`,
+      type: 'success'
+    })
+    setTimeout(() => {
+      setMessage('')
+    }, 3000)
+  }
+})
 
 
 

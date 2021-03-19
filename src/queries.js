@@ -40,6 +40,7 @@ addBook(
     author {
       name
       born
+      bookCount
     }
     genres
 }
@@ -81,6 +82,7 @@ subscription {
      published
      author {
        name
+       bookCount
      }
      genres
   }
