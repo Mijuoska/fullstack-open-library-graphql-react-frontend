@@ -1,37 +1,61 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useLazyQuery } from '@apollo/client'
 import { ALL_BOOKS, ME } from '../queries'
 import BooksTable from './BooksTable'
 
 const Books = ( { show, mode } ) => {
 
-const result = useQuery(ALL_BOOKS)
 
+const [books, setBooks] = useState([])
 const [genre, setGenre] = useState('')
+const [genres, setGenres] = useState([])
 const user = useQuery(ME)
-const books = result.data ? result.data.allBooks : []
-const booksByGenre = genre ? books.filter(book => book.genres.includes(genre)) : books
+
+const [getBooks, allBooks] = useLazyQuery(ALL_BOOKS, {
+  onCompleted: (data) => {
+     const genres = data.allBooks.map(book => book.genres
+         .find(genre => genre))
+       .reduce((unique, item) => {
+         return unique.includes(item) ? unique : [...unique, item]
+       }, [])
+
+    setBooks(data.allBooks)
+       
+    setGenres(genres)
+  }
+})
+
+
+const [getBooksByGenre, booksByGenre] = useLazyQuery(ALL_BOOKS, {
+  variables: {genre: genre},
+  onCompleted: (data) => {
+    setBooks(data.allBooks)
+  }
+
+})
+
 
 
 useEffect(()=> {
+  if (!genre && mode === 'allBooks') {
+    getBooks()
+  }
+
 if (user.data && mode === 'recommendations') {
   setGenre(user.data.me.favoriteGenre)
-} else if (mode == 'allBooks') {
-  setGenre('')
 }
 
-}, [mode, user.data])
+
+if (genre) {
+  getBooksByGenre(genre)
+}
 
 
 
-const genres = books.map(book => book.genres
-  .find(genre => genre))
-  .reduce((unique, item) => 
-  {
-    return unique.includes(item) ? unique : [...unique, item]
-  }, [])
+}, [mode, genre])
 
- 
+
+
 
 
 
@@ -40,7 +64,7 @@ const genres = books.map(book => book.genres
   }
 
 
-if (result.loading) {
+if (allBooks.loading || booksByGenre.loading) {
   return <div>Loading...</div>
 }
 
@@ -50,18 +74,18 @@ return (
     <div>
     <div>
       <h2>Books ({genre ? `genre: ${genre}` : 'all'})</h2>
-
+      <button onClick={() => setGenre('')}>All</button>
       {genres.map(genre => <button value={genre} key={genre} onClick={({ target } )=> setGenre(target.value) }>{genre}</button>)}
       </div>
 
-      <BooksTable books={booksByGenre}/>
+      <BooksTable books={books}/>
     </div>
   )
 } else if (mode === 'recommendations') {
   return (
     <div>
     <h2>Books in your favorite genre ({genre})</h2>
-  <BooksTable books={booksByGenre}/>
+  <BooksTable books={books}/>
   </div>
   )
 }
