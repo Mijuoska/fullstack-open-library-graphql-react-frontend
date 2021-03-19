@@ -18,10 +18,12 @@ const App = () => {
 
 useSubscription(BOOK_ADDED, {
   onSubscriptionData: ({ subscriptionData }) => {
-    console.log(subscriptionData)
     const title = subscriptionData.data.bookAdded.title
     const author = subscriptionData.data.bookAdded.author.name
-    alert(`New book "${title}" by ${author} added`)
+    setMessage({content: `New book "${title}" by ${author} added`, type: 'success'})
+      setTimeout(() => {
+        setMessage('')
+      }, 3000)
   }
 })
 

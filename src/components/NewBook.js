@@ -67,10 +67,7 @@ setTimeout(() => {
     // setGenres([])
     // setGenre('')
 
-    setMessage({content: `Created book ${title}`, type:'success'})
-    setTimeout(()=> {
-      setMessage('')
-    }, 3000)
+  
   }
 
   const addGenre = () => {
