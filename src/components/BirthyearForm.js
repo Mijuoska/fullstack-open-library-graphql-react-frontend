@@ -7,11 +7,9 @@ const BirthyearForm = ({ authors }) => {
 const [name, setName] = useState(authors[0])
 const [born, setBirthyear] = useState('')
 
-const [updateAuthor] = useMutation(UPDATE_AUTHOR, {
-    refetchQueries: [{
-        query: ALL_AUTHORS
-    }]
-})
+
+
+ const [updateAuthor] = useMutation(UPDATE_AUTHOR)
 
 const submit = (event) => {
     event.preventDefault()

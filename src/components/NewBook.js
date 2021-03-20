@@ -22,26 +22,9 @@ setTimeout(() => {
 }, 3000)
     
   },
-  update: (store, response) => {
-   const booksInStore = store.readQuery({query: ALL_BOOKS})
-   const authorsInStore = store.readQuery({query: ALL_AUTHORS})
-   store.writeQuery({
-     query: ALL_BOOKS
-    },
-    {data: {
-      ...booksInStore, allBooks: [...booksInStore.allBooks, response.data.addBook]
-    }}
-    )
-    store.writeQuery({
-      query: ALL_AUTHORS
-    }, {
-      data: {
-        ...authorsInStore,
-        allAuthors: response.data.allAuthors
-      }
-    })
-  }
+  refetchQueries: [{query: ALL_BOOKS}, {query: ALL_AUTHORS}]
 })
+
 
 
   if (!show) {

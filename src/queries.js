@@ -5,6 +5,7 @@ export const ALL_AUTHORS = gql `
   name
   born
   bookCount
+  id
   }
 
   }
@@ -55,6 +56,8 @@ mutation updateAuthor($name: String!, $born: Int!) {
 ) {
     name
     born
+    bookCount
+    id
 }
 }
 `

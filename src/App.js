@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import LoginForm from './components/LoginForm'
 import NewBook from './components/NewBook'
 import Notification from './components/Notification'
+import { ALL_BOOKS, ALL_AUTHORS, BOOK_ADDED } from './queries'
 
 
 
@@ -13,7 +14,6 @@ const App = () => {
   const [message, setMessage] = useState('')
   const [token, setToken] = useState(null)
   const client = useApolloClient()
-
 
 
 useEffect(()=> {
@@ -25,6 +25,74 @@ if (localStorage.getItem('library-user-token')) {
 
 
 }, [])
+
+
+ const includedIn = (set, object) => {
+   set.map(p => p.id).includes(object.id)
+ }
+
+const updateBooksCache = (cache, newBook) => {
+  const booksInStore = cache.readQuery({
+    query: ALL_BOOKS
+  })
+  if (!includedIn(booksInStore.allBooks, newBook)) {
+    const updatedBooks = booksInStore.allBooks.concat(newBook)
+    cache.writeQuery({
+      query: ALL_BOOKS
+    }, {
+      data: {
+        allBooks: updatedBooks
+      }
+    })
+  }
+
+}
+
+const updateAuthorsCache = (cache, newBook) => {
+  const {
+    author
+  } = newBook
+
+
+  const authorsInStore = cache.readQuery({
+    query: ALL_AUTHORS
+  })
+
+  if (!includedIn(authorsInStore.allAuthors, author)) {
+    const updatedAuthors = authorsInStore.allAuthors.concat(author)
+    cache.writeQuery({
+      query: ALL_AUTHORS
+    }, {
+      data: {
+        allAuthors: updatedAuthors
+      }
+    })
+  }
+
+}
+
+
+
+useSubscription(BOOK_ADDED, {
+  onSubscriptionData: ({
+    client,
+    subscriptionData
+  }) => {
+    const newBook = subscriptionData.data.bookAdded
+    const {
+      cache
+    } = client
+    updateBooksCache(cache, newBook)
+    updateAuthorsCache(cache, newBook)
+    setMessage({
+      content: `New book "${newBook.title}" by ${newBook.author.name} added`,
+      type: 'success'
+    })
+    setTimeout(() => {
+      setMessage('')
+    }, 3000)
+  }
+})
 
 
 
@@ -65,13 +133,11 @@ const logout = () => {
       <Books
         show={page === 'allBooks'}
         mode={page}
-        setMessage={setMessage}
       />
 
         <Books
         show={page === 'recommendations'}
         mode={page}
-        setMessage={setMessage}
       />
 
       <NewBook
