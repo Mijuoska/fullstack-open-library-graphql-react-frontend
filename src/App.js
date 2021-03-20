@@ -35,7 +35,7 @@ const updateBooksCache = (cache, newBook) => {
   const booksInStore = cache.readQuery({
     query: ALL_BOOKS
   })
-  if (!includedIn(booksInStore.allBooks, newBook)) {
+  if (booksInStore && !includedIn(booksInStore.allBooks, newBook)) {
     const updatedBooks = booksInStore.allBooks.concat(newBook)
     cache.writeQuery({
       query: ALL_BOOKS
@@ -49,6 +49,7 @@ const updateBooksCache = (cache, newBook) => {
 }
 
 const updateAuthorsCache = (cache, newBook) => {
+  
   const {
     author
   } = newBook
@@ -58,7 +59,7 @@ const updateAuthorsCache = (cache, newBook) => {
     query: ALL_AUTHORS
   })
 
-  if (!includedIn(authorsInStore.allAuthors, author)) {
+  if (authorsInStore && !includedIn(authorsInStore.allAuthors, author)) {
     const updatedAuthors = authorsInStore.allAuthors.concat(author)
     cache.writeQuery({
       query: ALL_AUTHORS
